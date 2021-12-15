@@ -1,0 +1,11 @@
+Package: RTutorInfluenceOfFemaleRoleModels
+Type: Package
+Title: RTutor problem set InfluenceOfFemaleRoleModels
+Version: 0.1
+Date: 2021-14-12
+Author: Stefanie Buda
+Maintainer: Stefanie Buda <stefanie.buda@uni-ulm.de>
+Description: RTutor problem set InfluenceOfFemaleRoleModels
+License: Problem set content: Creative Commons (CC BY-NC)
+	 Package code: GPL >= 2.0
+Depends: RTutor, haven, dplyr, ggplot2, forcats, gridExtra, lfe, texreg

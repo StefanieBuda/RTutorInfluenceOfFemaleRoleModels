@@ -1,0 +1,1136 @@
+
+```{r 'check_ps', include=FALSE}
+
+user.name = 'ENTER A USER NAME HERE'
+```
+
+
+# Influence of Female Role Models on the Choice of Major
+
+Author: Stefanie Buda
+
+
+
+
+## Exercise Welcome!
+
+Welcome to this interactive problem set which is part of my bachelor's thesis at Ulm University. It is based on the article "Gender Differences in the Choice of Major: The Importance of Female Role Models" by Catherine Porter and Danila Serra and will retrace their findings step-by-step using the original data. While doing that, I hope you will have fun using R and learn something new about the statistical methods the authors used.
+
+The article and the data can be downloaded [here](https://www.aeaweb.org/articles?id=10.1257/app.20180426). 
+
+
+### Content 
+
+In their above-mentioned article, Catherine Porter and Danila Serra conduct a field experiment at an US university. Their goal is to increase the share of women majoring in economics. To do so, they want to tackle one possible reason: the low number of female role models. 
+
+The experiment took place in 2015 and 2016. They conducted a survey among all the students taking the Principles of Economics class. In 2016, the students of the treatment group were visited by role models who graduated at the same university. The role models talked about things like their experiences and their jobs, but without any connection to gender-specific topics. 
+
+Afterwards they analyzed the data and found some impressive effects of this intervention. If you want to know what they found, just start working on this problem set right away!   
+
+
+### How to solve this problem set
+
+This problem set contains code chunks for programming tasks as well as some quizzes. You do not need to solve the exercises in the given order, but I would highly recommend doing so since the later exercises use results of the prior ones. Within one exercise you have to solve the tasks in the given order.
+
+For the quizzes, just choose the answer and click *check*.
+Above the code chunks you can see several buttons. The button *edit* lets you edit the code inside of the chunk. Click *check* to check your answer, if you're not sure what to do or why your solution is incorrect, you can click *hint* to get a clue. You could also click on *solution* to display the sample solution.
+To move on to the next exercise, you can use the "Go to next exercise" button on the bottom left or click on the respective tabs on top.
+
+While working on the problem set, you can earn awards for solving the exercises. Have fun!
+
+
+Here is a short overview of the exercises you're going to work on:
+
+**Exercise 1: Getting Started**
+
+**Exercise 2: Evaluating a Field Experiment**
+
+2.1 Balance Tests
+
+2.2 Internal Validity
+
+**Exercise 3: Descriptive Approach**
+
+3.1 Intermediate Outcomes
+
+3.2 Final Outcomes
+
+**Exercise 4: The Basics of Difference-in-Differences**
+
+**Exercise 5: Regression Analysis**
+
+5.1 Intermediate Outcomes
+
+5.2 Final Outcomes
+
+**Exercise 6: Additional Analyses**
+
+6.1 Where are we attracting female students from?
+
+6.2 Effects on male students
+
+**Conclusion**
+
+**References**
+
+
+
+## Exercise 1 -- Getting Started
+
+In this Exercise, we will first load the data and have a look at it. The file we use is called `FemaleRoleModels.dta`, which is a pre-processed version of the original data the authors provide. To make it easier to work with, I decided to rename some of the columns and to remove those which are not used for the analysis in this problem set. The exact changes can be seen in the data preparation file. 
+
+
+**Task 1.1** To be able to work with the data, we have to import it by assigning it to a variable. Our file is a Stata DTA file, therefore we need the package `haven` which we have to load using `library()`. This package contains the command `read_dta("file_name")`. Use it to import our file and assign it to the variable `data_complete`.    
+
+```{r "2_1"}
+library(haven)
+
+___ <- ___("data/FemaleRoleModels.dta")
+```
+
+
+**Task 1.2** Now let us have a look at the data. Use `head(data_name)` to display the first few lines of our data and the columns that are included. 
+
+```{r "2_2"}
+# Enter your code here.
+```
+
+The core variables for our analysis are: 
+
+
+- `year2016`: dummy variable for the year (1 for 2016, 0 for 2015)
+
+- `treat2015`: dummy variable for the treatment group of 2015 (1 for being part of the treatment group, 0 for not being part of the treatment group)
+
+- `treat2016`: dummy variable for the treatment group of 2016 (1 for being part of the treatment group, 0 for not being part of the treatment group)
+
+- `female`: dummy variable for the gender (1 for female, 0 for male)
+
+- `took_intermediate`: dummy variable for the enrollment in Intermediate Micro within a year (1 for enrolled, 0 for not enrolled)
+
+- `took_another`: dummy variable for the enrollment in at least another economics class (1 for enrolled, 0 for not enrolled)
+
+- `num_econclass`: number of total economics classes taken
+
+- `econ_major`: dummy variable for majoring in economics (1 for majoring in economics, 0 for a different major)
+
+
+```{r eval=FALSE}
+# Run for additional info in the Viewer pane
+info("Dummy variable")
+```
+
+
+**Task 1.3** It is important to understand the structure of our data set. One row equates one observation. 
+
+
+Quiz: But what is one observation?
+
+[1]: a class
+[2]: a student 
+[3]: a school
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Structure of the data set")
+```
+
+
+**Task 1.4** Since every row equates one student part of the field experiment, we can find out how many students participated. To count the rows we can use the command `nrow(variablename)`. 
+
+```{r "2_3"}
+# Enter your code here.
+```
+
+*Remark: if you want to count the columns, there is a similar command called `ncol()`.*
+
+
+**Task 1.5** Now let us have a look at the variables in detail. We can use the command `summary(variablename)` to show some statistics for each variable, especially if some of them contain missing values (NA's). Show the summary for our data set `data_complete`.
+
+```{r "2_4"}
+# Enter your code here.
+```
+
+
+**Task 1.6** 
+
+
+Quiz: Does any of our variables contain NA's?
+
+[1]: yes
+[2]: no 
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Existence of NAs")
+```
+
+
+**Task 1.7** We can also see very easily how the genders are distributed in our sample since we now are using a dummy variable.
+
+
+Quiz: How many of the students in our data set are female?
+
+[1]: 49.68 %
+[2]: 49.03 %
+[3]: 44.88 % 
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Percentage of women")
+```
+
+Now we know that our data set is not exactly divided in fifty-fifty when it comes to gender, but it is not a huge discrepancy. 
+
+
+**Task 1.8** The package `dplyr` offers neat commands to edit your data frame, e.g. add new columns or filter the data. Load the package the same way we did with `haven` in Task 1.1.
+
+
+```{r "2_5"}
+# Enter your code here.
+```
+
+
+To be able to use the difference-in-differences estimation strategy (which will be discussed in Exercise 4), the experimenters implemented a control and treatment group for both 2015 and 2016, although the role model visits took place in 2016 only. To keep the external circumstances constant, they focused on classes that took place on exactly the same day and time of a week by the same instructor. They also considered the class sizes to make sure the control and treatment groups are about the same size.
+
+
+**Task 1.9** Our data contains the information whether it is an observation from 2015 or 2016 and whether it was part of the control or treatment group. Combining this information, add a new column `group` using the function `mutate()` which contains the correct group ("control15", "treatment15", "control16" and "treatment16"). The relevant variables are `year2016`, `treat2015` and `treat2016`.
+
+
+```{r "2_6"}
+  data_complete <- data_complete %>%
+  mutate(group = case_when( (___ == 0 & treat2015 == 0) ~ "control15",
+                            (year2016 == 0 & treat2015 == ___) ~ "treatment15",
+                            (year2016 == 1 & treat2016 == 0) ~ "control16",
+                            (year2016 == 1 & treat2016 == 1) ~ "___"),
+         group = as.factor(group)
+  )
+```
+
+
+```{r eval=FALSE}
+# Run for additional info in the Viewer pane
+info("Pipe operator %>%")
+```
+
+
+**Task 1.10** To change the order of our groups (e.g. how they will show up in a plot), we will arrange them accordingly using the command `fct_relevel`, which is part of the package `forcats`. Just click *check* to run the code.
+
+```{r "2_7"}
+library(forcats)
+data_complete$group <- fct_relevel(data_complete$group, 
+                                   c("control15", "treatment15", "control16", "treatment16"))
+```
+
+
+**Task 1.11** For our analysis we want to focus on the effects for female students only. Later on we will examine the effect on male students separately, which will justify this step. Please use the variable `female` (reminder: which is 1 for female students and 0 for male students) to filter the data and save it as `data`. Like this we are still able to use `data_complete` for further analyses. 
+
+```{r "2_8"}
+___ <- data_complete %>% filter(female == ___)
+```
+
+
+**Task 1.12** Since we filtered out all male students, we have 627 female students left in our sample `data`. Let's have a look at how they are distributed among the different treatment groups. Ideally they should all be about the same size. To do so, we use a combination of the commands `group_by(variablename)` and `summarize()`. The command `n()` returns the total count for the respective group. 
+
+```{r "2_9"}
+data %>% 
+  group_by(___) %>%
+  summarize(count_observations = n()) %>%
+  ungroup()
+```
+
+
+
+We have loaded and arranged our data as well as checked if some of the relevant variables contain missing values. Everything would be set to start with our core analysis - but since we are working with a field experiment, there are a few things we should look out for first.  We will have a short look at those.
+
+
+
+
+
+## Exercise 2 -- Evaluating a Field Experiment
+
+Since the data we are working with was generated by a field experiment, there are a few things we have to watch out for and to keep in mind for the following analyses. So first of all, we will check if our sample is balanced. Secondly we will examine if there are factors emanating from our groups that could harm the internal validity of the results. 
+
+
+First of all we need to load the required data to be able to access it. Just click *check*.
+```{r "3_1"}
+load("data/FemaleRoleModels_data")
+```
+
+
+### 2.1 Balance Tests
+
+Ideally, you want your data to be balanced regarding the characteristics of your participants. In a field experiment like ours it is basically impossible to randomize it perfectly, since the students could enroll in any of the classes that were offered. Therefore we will exemplary have a look at two of the characteristics and how they are distributed between the groups. There were many more checks in the article, Table 1 offers an overview for all the variables and both years.  
+
+
+**Task 2.1.1** The variable `american` tells us whether the student is American or an international student. Let's have a look at the average percentage of American students in each group. Fill in the blanks and have a look at the values.
+
+```{r "3_2"}
+data %>% 
+  group_by(___) %>% 
+  summarize(mean = mean(___))
+```
+
+It looks like there are way fewer American students in the treatment group of 2016. To check whether there are significant differences in the groups we can perform a t-test. 
+
+
+**Task 2.1.2** First of all we need to split our data so we can use these filtered data frames as input of our command. We will create `data_c16` and `data_t16` which contain all the available data for the control group of 2016 respectively the treatment group of 2016. 
+
+```{r "3_3"}
+data_c16 <- data %>%
+  filter(group == "___")
+
+data_t16 <- data %>%
+  filter(group == "___")
+```
+
+
+**Task 2.1.3** Now we can perform the t-test using the command `t.test`. Just click *check* and take a look at the output. 
+
+```{r "3_4"}
+ttest1 <- t.test(data_c16$american, data_t16$american)
+ttest1
+```
+
+The last row shows the means of both groups, which are on par with the ones we calculated above. The p-value is 0.002006, therefore we have a highly significant difference between the control and the treatment group of 2016. 
+
+
+**Task 2.1.4** Let's have a look at the share of freshman in those to groups. Just click *check* to run the code.
+
+```{r "3_5"}
+ttest2 <- t.test(data_c16$freshman, data_t16$freshman)
+ttest2
+```
+
+**Task 2.1.5**
+
+
+Quiz: Is there a significant difference in the share of freshmen?
+
+[1]: yes, there are significantly fewer freshmen in the treatment group
+[2]: no, there is no significant difference
+[3]: yes, there are significantly more freshmen in the treatment group 
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Balance of freshman")
+```
+
+
+We have to keep those imbalances in mind when performing our analysis later on.
+
+
+### 2.2 Internal Validity
+
+When conducting a field experiment, there are a lot of things you cannot control for. There can be effects caused by the pure existence of the treatment, the interaction of the different groups or just by the fact that they partake in an experiment.   
+
+Three examples of such effects are the *John Henry effect*, the *Spillover effect* and the *Hawthorne effect*. If you are not familiar with those or want to recap the exact meaning, please have a look at the corresponding info boxes below.
+
+
+```{r eval=FALSE}
+# Run for additional info in the Viewer pane
+info("John Henry effect")
+```
+
+
+```{r eval=FALSE}
+# Run for additional info in the Viewer pane
+info("Spillover effect")
+```
+
+
+```{r eval=FALSE}
+# Run for additional info in the Viewer pane
+info("Hawthorne effect")
+```
+
+
+**Task 2.2.1** 
+
+
+Quiz: Which of the treatment effects mentioned above is most likely to be a problem in our setting?
+
+[1]: The John Henry effect
+[2]: The Spillover effect 
+[3]: The Hawthorne effect
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Treatment Effects")
+```
+
+Since students from the treated classes could talk about the role model visits with others from control classes, there might have been a spillover of the treatment effect. 
+
+
+**Task 2.2.2** So we have to keep in mind that our later estimated difference between control- and treatment group is probably underestimated, it is ___ of the actual impact of the intervention.
+
+
+Quiz: Which of these choices fits the blank in the statement above?
+
+[1]: more of an upper bound
+[2]: a quite exact estimation
+[3]: more of a lower bound 
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Estimated difference is a lower bound")
+```
+
+
+Keeping those findings in mind, we will now start with the analysis of the data.
+
+
+
+
+
+## Exercise 3 -- Descriptive Approach
+
+Let's start with our core analysis. First of all we will take a descriptive approach and try to get a first idea of the impacts by generating and analyzing some plots. Additionally, we will split this up into two parts by first having a look at the intermediate outcomes and then looking at the final outcomes.
+
+
+Again we need to load the data required to solve this exercise. Just click *check*.
+```{r "4_1"}
+load("data/FemaleRoleModels_data")
+```
+
+
+**Task 3.0** But before we get started, we need to load the package `ggplot2`, which we will be using to generate some nice-looking plots. Just click *check* to run the code.
+
+```{r "4_2"}
+library(ggplot2)
+```
+
+
+### 3.1 Intermediate Outcomes
+
+There are two measures we will use to measure the intermediate outcomes: the enrollment in Intermediate Microeconomics within a year and the enrollment in at least another economics class. 
+
+*Intermediate Microeconomics* is a prerequisite for upper level economics classes, which means that if a student wants to major in economics, they are bound to take this class. Hence it is a good measure for the short-term impact of the intervention. 
+
+The *enrollment in at least another economics class* is also a good indicator for the student's interest in economics and therefore a good measure for the short-term impact of the intervention.
+
+
+**Task 3.1.1** To create a nice plot, we have to prepare the data first. We want to display the percentage of students that enrolled in Intermediate Microeconomics per group. We use the variable `took_intermediate` since it is the corresponding dummy variable. Assign this newly arranged data frame to `table_inter` and display it.
+
+```{r "4_3"}
+___ <- data %>% 
+  group_by(___) %>% 
+  count(took_intermediate) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  filter(took_intermediate == 1) %>%
+  ungroup() %>%
+  select(group, prop)
+  
+___
+```
+
+In this table we can see the percentages for each group. It already looks like there are some big differences, but it would be way easier to see this in a plot. But since we will come back to this table later on, it will come in handy that we saved it as a separate variable.
+
+
+**Task 3.1.2** Now we will use the command `ggplot()` from the package `ggplot2` we loaded earlier to turn this table into a nice plot. Using `geom_bar()` creates a bar plot. We want the x-axis to display the groups. Additionally, we want the y-axis to display the percentage (e.g. 18 instead of 0.18) to make it easier to read. Fill in the gaps and run the code.
+
+```{r "4_4"}
+table_inter %>%
+  ggplot(aes(x = ___)) +
+  geom_bar(aes(y = prop*___), 
+           stat = "identity", 
+           fill = c("#FFCC99", "#FFCC99", "#660000", "#660000")) +
+  labs(title = "Enrolled in Intermediate Micro within year", 
+       x = "Group", 
+       y = "Percentage" ) +
+  theme_minimal()
+```
+
+*This plot references the upper left part (Panel A) of Figure 1.*
+
+
+Now we can see the potential effect at a glance.
+
+
+```{r eval=FALSE}
+# Run for additional info in the Viewer pane
+info("Creating plots with ggplot()")
+```
+
+
+**Task 3.1.3** Our second measure for intermediate outcomes is the enrollment in at least another economics class, which is represented as the variable `took_another` in our data. This time we will put both steps of preparing the data and setting up the plot in one piece of code using the pipe operator (%>%). 
+
+```{r "4_5"}
+data %>% 
+  group_by(___) %>% 
+  count(took_another) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  filter(___ == 1) %>%
+  select(group, prop) %>%
+  ungroup() ___
+  ggplot(aes(x = group)) +
+  geom_bar(aes(y = prop*100), 
+           stat = "identity", 
+           fill = c("#FFCC99", "#FFCC99", "#660000", "#660000")) +
+  labs(title = "Took one or more further econ class", 
+       x = "Group", 
+       y = "Percentage" ) +
+  theme_minimal()
+```
+
+*This plot references the upper right part (Panel B) of Figure 1.*
+
+
+Again, we can suspect some kind of treatment effect by looking at this plot.
+
+
+### 3.2 Final Outcomes
+
+Now that we found some indication for short-term effects, we will have a look at the more long-term orientated final outcomes. Again we will use two measures to examine: the total number of economics classes taken and the decision to major in economics. 
+
+The *total number of economics classes taken* are like the long-term version of the enrollment in at least one more class and quantifies the student's interest in economics. 
+
+The decision to *major in economics* is the main goal of the intervention and therefore probably the most important long-term effect.
+
+
+**Task 3.2.1** Our first measure `num_econclass` is not a dummy variable like the others, therefore we need to format it differently. We want to show the average number of economics classes taken per group. To implement this, we will use the command `summarize` one more time. The plot will be saved as `plot1` to reference it later on. 
+
+```{r "4_6"}
+___ <- data %>% 
+  group_by(group) %>% 
+  summarize(mean = mean(___)) %>%
+  ggplot(aes(x = group)) +
+  geom_bar(aes(y = mean), 
+           stat = "identity", 
+           fill = c("#FFCC99", "#FFCC99", "#660000", "#660000")) +
+  labs(title = "Average number of econ classes taken", 
+       x = "Group", 
+       y = "Count" ) +
+  ylim(0,1.5) +
+  theme_minimal()
+```
+
+
+**Task 3.2.2** Since it is the same procedure for our last variable - it is literally just the variable that changes - you will be given the code for this plot. Just click *check* to run it. 
+
+```{r "4_7"}
+plot2 <- data %>% 
+  group_by(group) %>% 
+  count(econ_major) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  filter(econ_major == 1) %>%
+  select(group, prop) %>%
+  ungroup() %>%
+  ggplot(aes(x = group)) +
+  geom_bar(aes(y = prop*100), 
+           stat = "identity", 
+           fill = c("#FFCC99", "#FFCC99", "#660000", "#660000")) +
+  labs(title = "Majored in economics", 
+       x = "Group", 
+       y = "Percentage" ) +
+  theme_minimal()
+```
+
+
+**Task 3.2.3** Lastly we want to display both of our plots next to each other to save some space. To do this, we will use the command `grid.arrange()` from the package `gridExtra`. Just click *check* to run the code.
+
+```{r "4_8",fig.width=9}
+library(gridExtra)
+grid.arrange(plot1, plot2, nrow = 1)
+```
+
+*This plot references the lower part (Panels C and D) of Figure 1.*
+
+
+```{r eval=FALSE}
+# Run for additional info in the Viewer pane
+info("Arranging plots with grid.arrange()")
+```
+
+
+This descriptive analysis gave us a lot of hints that there was an effect of the intervention on basically all of these considered measures. Now we want to use the difference-in-differences method to estimate the real effects and check if they were actually significant. The next exercise is a little introduction to this method, to give you a bit of background knowledge on the theory behind it before we start with our regression analysis.
+
+
+
+
+
+## Exercise 4 -- The Basics of Difference-in-Differences
+
+The *difference-in-differences (DID) method* compares the changes in outcomes over time between a population that was treated (treatment group) and a population that was not treated (control group) (Gertler et al., 2016, p.130ff). It is named like that because we are looking at two differences: 
+
+- *the first difference*: the difference before and after the intervention for the treatment group. Since we are comparing the same group, we control for factors that are constant over time.
+
+- *the second difference*: the difference before and after the intervention for the control group. This group was not affected by the treatment, but was exposed to the same set of environmental conditions, therefore the difference can be considered a measure of time-varying factors.
+
+Like this, we can "extract" the actual before-and-after effect of the intervention by subtracting the *second difference* from the *first difference*, more precisely:
+
+$$ DID~impact = (treatment_{after} - treatment_{before}) - (control_{after} - control_{before}) $$
+
+In our sample, 'before' and 'after' points are 2015 and 2016. 
+
+
+Gertler et al. (2016) suggest a nice way to put the data to make it easier to calculate the DD impact without jumbling the values - a 4x4 table:
+
+
+![](data/table_did.png) 
+
+*This table is based on Table 7.1 of Gertler et al., 2016, p.133 (own representation).*
+
+
+### Calculating the DID impact
+
+Now we want to apply this method to our data. Exemplary we want to calculate the DID impact for the enrollment in Intermediate Microeconomics (`took_intermediate`).
+
+
+You know the drill - just click *check*.
+```{r "5_1"}
+load("data/FemaleRoleModels_data")
+load("data/FemaleRoleModels_table_inter")
+```
+
+
+**Task 4.1** 
+
+
+Quiz: First of all - having our previous plots in mind - what are your expectations for the treatment effect?
+
+[1]: positive effect, therefore a DID impact > 0 
+[2]: no effect at all, therefor a DID impact = 0
+[3]: negative effect, therefore a DID impact < 0
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("DID estimator")
+```
+
+
+**Task 4.2** This is where we come back to our table from last exercise. We can use the data and arrange it to look like the table above. This rearrangement is already prepared in the next chunk, just click *check* to run the code. 
+
+```{r "5_2"}
+treatment_inter <- cbind(table_inter[table_inter$group == "treatment16",2], 
+                         table_inter[table_inter$group == "treatment15",2])
+controll_inter <- cbind(table_inter[table_inter$group == "control16",2], 
+                        table_inter[table_inter$group == "control15",2])
+DID_table <- rbind(treatment_inter, controll_inter)
+rownames(DID_table) <- c("Treatment", "Control")
+colnames(DID_table) <- c("After", "Before")
+round(DID_table, 4)
+```
+
+
+**Task 4.3** Using this information, please calculate the DID impact.
+
+```{r "5_3"}
+DID_impact = (0.1846 - ___) - (___ - ___)
+DID_impact
+```
+
+
+**Task 4.4** The values we used to calculate the impact were percentages, e.g. about 18.46% of the female students in the treatment group of 2016 enrolled in Intermediate Microeconomics within a year. How can we interpret our DID impact?  
+
+
+Quiz: The intervention increased the likelihood of enrolling in Intermediate Microeconomics by...
+
+[1]: 11.5 percent.
+[2]: 11.5 percentage points. 
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Interpretation of the DID estimator")
+```
+
+
+So far we have only estimated the effect of the intervention, but we do not know yet if those differences were **statistically significant**. On these grounds we will now go on to some regression analysis.
+
+
+
+
+
+## Exercise 5 -- Regression Analysis
+
+In this exercise we want to evaluate the treatment effect using ordinary least squares regressions. To estimate the DID impact we use the following equation:
+
+$$
+Y_i = \beta_0 + \beta_1 \cdot dt_i + \beta_2 \cdot dT_i + \beta_3 \cdot dt_i \times dT_i + \delta \cdot X_i + u_i    
+$$ 
+
+where 
+
+- $Y_i$ is the estimator for student $i$'s interest in majoring economics 
+
+- $dt_i$ is a dummy variable equal to 1 if student $i$ took the class in 2016 and 0 if student $i$ took the class in 2015 
+
+- $dT_i$ is a dummy variable equal to 1 if student $i$ is part of the treatment group and 0 if student $i$ is part of the control group
+
+- $dt_i \times dT_i$ is the interaction term
+
+- $X_i$ is a vector of demographic controls and class characteristics
+
+- $u_i$ is the error term
+
+
+We include $X_i$ to take into account the imbalances in our data like the ones we examined in Exercise 2.1.
+
+The interaction term $dt_i \times dT_i$ is what we are actually interested in - the corresponding coefficient $\beta_3$ is the treatment effect we want to estimate. 
+
+
+Let's load the required data. Just click *check*.
+```{r "6_1"}
+load("data/FemaleRoleModels_data")
+```
+
+
+**Task 5.1**
+
+
+Quiz: Which of the variables in our data should be used for $dt_i$?
+
+[1]: treat2016
+[2]: year2016 
+[3]: took_intermediate
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Variable for dt_i")
+```
+
+For $dT_i$ when can use our variable `treat2015`.
+
+
+**Task 5.2** To perform the regression, we use the command `felm` from the package `lfe`. Load it by clicking *check*.
+
+```{r "6_2"}
+library(lfe)
+```
+
+
+### 5.1 Intermediate Outcomes
+
+We will keep the structure of our descriptive approach and start with analyzing the intermediate outcomes first.
+
+
+**Task 5.1.1** First we want to examine the results without the controls - if we take a look at our formula above this means we leave out $X_i$ for the moment. The command `felm` needs a formula as the first input which contains the regression equation (e.g. y ~ x + z). By using `:`, we can interact two variables. Additionally, we want to cluster our standard errors by classes (`class_cluster`) since those might violate the assumption of independence. Let's start with our first variable `took_intermediate`.   
+
+```{r "6_3"}
+reg1 <- felm(___ ~ year2016:treat2015 + year2016 + treat2015|0|0|class_cluster, data = data)
+```
+
+
+***General Remark: In the original analysis, the authors use wild bootstrap cluster using a specific Stata command. Since there was no elegant way to replicate this in R, we will stick to the clustering above. The package `fwildclusterboot`(see  [here](https://cran.r-project.org/web/packages/fwildclusterboot/vignettes/fwildclusterboot.html)) seemed to be very promising, but could not be used without throwing errors. The standard errors in this problem set will differ from those reported in the original article, but the coefficients and their statistical significance remain unaffected by this.***
+
+
+**Task 5.1.2** Now we want to add the controls to our regression. The variables we want to control for are `female_prof`, `instate`, `freshman`, `american`, `ACumGPA`, `grade_principles` and `small_class` (in this order). Fill in the blanks accordingly and save it as `reg2``.
+
+```{r "6_4"}
+___ <- felm(took_intermediate ~ year2016:treat2015 + year2016 + treat2015 + female_prof + ___ + freshman + ___ + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+```
+
+
+```{r eval=FALSE}
+# Run for additional info in the Viewer pane
+info("Controls")
+```
+
+
+**Task 5.1.3** The package `texreg` offers some nice ways to display the results of a regression or even multiple regressions in one table. Since we want to use it from now on, click *check* to load the package.
+
+```{r "6_5"}
+library(texreg)
+```
+
+
+**Task 5.1.4** Now let us have a look at the results of our regressions. We use the command `screenreg()` to put together the results of our regressions `reg1` and `reg2`. The code is already given, just click *check*. 
+
+```{r "6_6"}
+screenreg(list(reg1, reg2), 
+          custom.header = list("Took Micro within year" = 1:2), 
+          custom.model.names = c("w/o controls", "with controls"), 
+          omit.coef = "(female_prof)|(instate)|(freshman)|(american)|(ACumGPA)|(grade_principles)|(small_class)",
+          reorder.coef = c(4, 2, 3, 1),
+          digits = 3)
+```
+
+*This table references the first two columns of Table 3.*
+
+
+The first row shows the coefficient for our interaction term, which is our estimated effect. We can see a positive and significant effect for both regressions: without controls the likelihood for a female student to enroll in Intermediate Microeconomics within a year increased by 11.5 percentage points. This corresponds with the effect we calculated manually in Exercise 4. Including the controls, the effect is just a little bit smaller.
+
+
+**Task 5.1.5** 
+
+
+Quiz: What level of significance do we get for our estimator?
+
+[1]: 10 percent level
+[2]: 1 percent level 
+[3]: 5 percent level
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Significance of our estimator")
+```
+
+
+**Task 5.1.6** The increase by about 11.5 percentage points is even more impressive if we compare it with the average enrollment rate in our baseline for both 2015 and 2016 (all groups except the treatment group of 2016). Complete the code below to calculate that average enrollment rate.
+
+```{r "6_7"}
+data %>% 
+  filter(group != "___") %>% 
+  summarize(mean = mean(took_intermediate))
+```
+
+So, the average enrollment rate is about 12 percent. This means an increase of 11 percentage points is almost a doubling!
+
+
+**Task 5.1.7** Secondly we want to estimate the effects for the enrollment in at least another economics class, which is represented by the variable `took_another`. The code for this is very similar to the one we used above. Set up the code for the regression without and with controls and store it as `reg3` and `reg4`.
+
+```{r "6_8"}
+reg3 <- felm(took_another ~ year2016:treat2015 + ___ + treat2015|0|0|class_cluster, data = data)
+
+___ <- felm(took_another ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+```
+
+
+**Task 5.1.8** Let's put together the results of our regression. Just click *check*.
+
+```{r "6_9"}
+screenreg(list(reg3, reg4), 
+          custom.header = list("Took another econ class" = 1:2), 
+          custom.model.names = c("w/o controls", "with controls"), 
+          omit.coef = "(female_prof)|(instate)|(freshman)|(american)|(ACumGPA)|(grade_principles)|(small_class)",
+          reorder.coef = c(4, 2, 3, 1),
+          digits = 3)
+```
+
+*This table references the last two columns of Table 3.*
+
+
+Again we can see a positive and significant effect for both regressions. The likelihood of enrolling in at least another economics class increased by 15.8 respectively 13.9 percentage points, which is quite a big impact.
+
+
+### 5.2 Final Outcomes
+
+Now we will start analyzing the effects on the final outcomes.
+
+
+**Task 5.2.1** Since you have now seen a lot of similar examples on how to perform the regressions I will leave the first one regarding the total numbers of economics classes taken (`num_econclass`) to you. The rest is already given. 
+
+```{r "6_10"}
+reg5 <- ___
+
+reg6 <- felm(num_econclass ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+
+
+reg7 <- felm(econ_major ~ year2016:treat2015 + year2016 + treat2015|0|0|class_cluster, data = data)
+
+reg8 <- felm(econ_major ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+```
+
+
+**Task 5.2.2** Let's put together the results of all the regressions above. The code is already given, just click *check*.
+
+```{r "6_11"}
+screenreg(list(reg5, reg6, reg7, reg8), 
+          custom.header = list("No. of econ classes taken" = 1:2, "Major in economics" = 3:4), 
+          custom.model.names = c("w/o controls", "with controls", "w/o controls", "with controls"), 
+          omit.coef = "(female_prof)|(instate)|(freshman)|(american)|(ACumGPA)|(grade_principles)|(small_class)",
+          reorder.coef = c(4, 2, 3, 1),
+          digits = 3)
+```
+
+*This table references Table 4.*
+
+
+Our analysis suggests that the treated female students took about 0.692/0.522 more classes relating to economics, but the results including controls are less significant (for both variables). Furthermore we find that the intervention increased the likelihood of majoring in economics by 9.8 respectively 8 percentage points. 
+
+
+**Task 5.2.3** Run this chunk to calculate the baseline average of female students majoring in economics.
+
+```{r "6_12"}
+data %>% 
+  filter(group != "treatment16") %>% 
+  summarize(mean = mean(econ_major))
+```
+
+So, compared to those 8.7 percent of female students majoring in economics in the baseline, the increase is (again) almost a doubling!
+
+
+This concludes the core analysis of this problem set. We found some significant treatment effects on female students. As a final evaluation, we will have a look at what study fields were affected by the intervention, as in what subject the female students would have majored in otherwise, and will estimate the effects on male students.
+
+
+
+
+
+## Exercise 6 -- Additional Analyses
+
+In this closing exercise we will investigate what other study fields were affected by the intervention and whether there was an effect on male students, too.
+
+
+### 6.1 Where are we attracting female students from?
+
+In Exercise 5 we found a quite substantial effect of the intervention on female students' interest in economics. But if they now target to major in economics, what other subject would have been their major if it wasn't for our intervention? This is especially interesting if we contemplate that the main goal of the intervention was to attract female students to a rather male-dominated, high-earning field. If we now just attracted women who would have majored in another high-earning field, the economical impact of the intervention may even be counterproductive. 
+
+Therefore we will have a look at four examples each of majors in high- and low-earning fields to see which one saw a reduction in interest. 
+
+
+For this analysis we need our data set `data`. Load it by clicking on *check*.
+```{r "7_1"}
+load("data/FemaleRoleModels_data")
+```
+
+
+First of all we will have a look at the majors representing the *high-earning fields*. Those are (including the corresponding dummy variable in our data in brackets):
+
+- STEM (`Major_STEM`)
+
+- finance (`Major_Finance`)
+
+- business (`Major_Business`)
+
+- marketing (`Major_Marketing`)
+
+
+**Task 6.1.1** We perform the regression for the four variables listed above (in this order) including controls and show the resulting regression table. Fill in the blanks and run the code.
+
+```{r "7_2"}
+reg9 <- felm(___ ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+
+___ <- felm(Major_Finance ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+
+reg11 <- felm(Major_Business ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = ___)
+
+reg12 <- felm(Major_Marketing ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+
+
+screenreg(list(reg9, reg10, ___, ___), 
+          custom.model.names = c("Major STEM", "Major finance", "Major business", "Major marketing"), 
+          omit.coef = "(female_prof)|(instate)|(freshman)|(american)|(ACumGPA)|(grade_principles)|(small_class)",
+          reorder.coef = c(4, 2, 3, 1),
+          digits = 3)
+```
+
+*This table references Table 5. In the original article, the columns 'Major finance' and 'Major business' are inadvertently interchanged.*
+
+
+**Task 6.1.2**
+
+
+Quiz: Were there any significant impacts on the high-earning field subjects?
+
+[1]: yes, on majoring finance
+[2]: yes, on majoring marketing
+[3]: yes, on majoring both finance and marketing
+[4]: no, no significant impacts on either of them 
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Effects on high-earning fields")
+```
+
+
+Now we will have a look at the majors representing the *low-earning fields*. Those are (including the corresponding dummy variable in our data in brackets):
+
+- other social sciences, e.g. psychology or anthropology (`Major_SocSc`)
+
+- arts (`Major_Arts`)
+
+- communication studies (`Major_Comm`)
+
+- humanities and languages (`Major_Hum`)
+
+
+**Task 6.1.3** Since the code is identical to the one above except for the variables, you just have to run it. Click *check* to do so.
+
+```{r "7_3"}
+reg13 <- felm(Major_SocSc ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+
+reg14 <- felm(Major_Arts ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+
+reg15 <- felm(Major_Comm ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+
+reg16 <- felm(Major_Hum ~ year2016:treat2015 + year2016 + treat2015 + female_prof + instate + freshman + american + ACumGPA + grade_principles + small_class|0|0|class_cluster, data = data)
+
+
+screenreg(list(reg13, reg14, reg15, reg16), 
+          #custom.header = list("No. of econ classes taken" = 1:2, "Major in economics" = 3:4), 
+          custom.model.names = c("Major social sciences", "Major arts", "Major communication", "Major humanities"), 
+          omit.coef = "(female_prof)|(instate)|(freshman)|(american)|(ACumGPA)|(grade_principles)|(small_class)",
+          reorder.coef = c(4, 2, 3, 1),
+          digits = 3)
+```
+
+*This table references Table 6.* 
+
+
+**Task 6.1.4**
+
+
+Quiz: Were there any significant impacts on the low-earning field subjects?
+
+[1]: yes, on majoring arts
+[2]: yes, on majoring humanities 
+[3]: yes, on majoring both arts and humanities
+[4]: no, no significant impacts on either of them
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Effects on low-earning fields")
+```
+
+
+In summary we can see that the intervention did not have a significant negative impact on female students' interest in the high-earning study fields, but we can see a very significant (at the 1 percent level) decline in likelihood of female students majoring in humanities. This suggests that those who were motivated to major in economics by the role model visits would have otherwise majored in humanities and languages, but we still have to keep in mind that the study field we chose to examine here are just a few examples.    
+
+
+
+### 6.2 Effects on male students
+
+So far, we have only investigated the effect on female students. Now we will come back to our dataset `data_complete` to have a look at the effect on male students. Load it by clicking on *check*.
+
+```{r "7_4"}
+load("data/FemaleRoleModels_data_complete")
+```
+
+
+**Task 6.2.1** This huge chunk of code creates the four plots for our four outcome measures `took_intermediate`, `took_another`, `num_econclass` and `econ_major` for male students only. Just click *check* to run it.
+
+```{r "7_5",fig.width=9}
+p1 <- data_complete %>%
+  filter(female == 0) %>%
+  group_by(group) %>% 
+  count(took_intermediate) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  filter(took_intermediate == 1) %>%
+  select(group, prop) %>%
+  ungroup() %>%
+  ggplot(aes(x = group)) +
+  geom_bar(aes(y = prop*100), 
+           stat = "identity", 
+           fill = c("#CCCCCC", "#CCCCCC", "#666666", "#666666")) +
+  labs(title = "Enrolled in Intermediate Micro within year", 
+       x = "Group", 
+       y = "Percentage" ) +
+  ylim(0,50) +
+  theme_minimal()
+
+p2 <- data_complete %>%
+  filter(female == 0) %>%
+  group_by(group) %>% 
+  count(took_another) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  filter(took_another == 1) %>%
+  select(group, prop) %>%
+  ungroup() %>%
+  ggplot(aes(x = group)) +
+  geom_bar(aes(y = prop*100), 
+           stat = "identity", 
+           fill = c("#CCCCCC", "#CCCCCC", "#666666", "#666666")) +
+  labs(title = "Took one or more further econ class", 
+       x = "Group", 
+       y = "Percentage" ) +
+  ylim(0,50) +
+  theme_minimal()
+
+p3 <- data_complete %>% 
+  filter(female == 0) %>%
+  group_by(group) %>% 
+  summarize(mean = mean(num_econclass)) %>%
+  ggplot(aes(x = group)) +
+  geom_bar(aes(y = mean), 
+           stat = "identity", 
+           fill = c("#CCCCCC", "#CCCCCC", "#666666", "#666666")) +
+  labs(title = "Average number of econ classes taken", 
+       x = "Group", 
+       y = "Count" ) +
+  theme_minimal()
+
+p4 <- data_complete %>% 
+  filter(female == 0) %>%
+  group_by(group) %>% 
+  count(econ_major) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  filter(econ_major == 1) %>%
+  select(group, prop) %>%
+  ungroup() %>%
+  ggplot(aes(x = group)) +
+  geom_bar(aes(y = prop*100), 
+           stat = "identity", 
+           fill = c("#CCCCCC", "#CCCCCC", "#666666", "#666666")) +
+  labs(title = "Majored in economics", 
+       x = "Group", 
+       y = "Percentage" ) +
+  ylim(0,50) +
+  theme_minimal()
+
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+*This plot references Figure 5.*
+
+
+**Task 6.2.2**
+
+
+Quiz: Does any of the plots suggest an effect on male students?
+
+[1]: yes, the plot for enrollment in Intermediate Micro
+[2]: yes, the plot for majoring in economics
+[3]: no, there is no evidence for an effect 
+
+```{r eval=FALSE}
+# Run line to answer the quiz above
+answer.quiz("Effects on male students")
+```
+
+
+Looking at those plots, there is no evidence of an effect of the role models visits on male students. This can be confirmed by an regression analysis as well, if you are interested in that, please refer to the authors' original analysis. 
+
+There is another interesting thing you can see in those plots: if you compare them to the ones we created in Exercise 3, all of the enrollment rates and the total number of economics classes taken are much higher for the male students than for the female students. This kind of brings us back to the start of our analysis since that is the main reason why the role model visits were implemented in the first place.
+
+
+This marks the end of this problem set. To sum things up, you can find a short conclusion as the next Exercise.
+
+
+
+
+
+## Exercise Conclusion
+
+In this problem set, we retraced the analysis of the article "Gender Differences in the Choice of Major: The Importance of Female Role Models" by Catherine Porter and Danila Serra. They exposed students of the Principles of Economics class to role models who majored in economics at the same university. This intervention had a significant impact on both intermediate and final outcome measure for female students, e.g. it increased the likelihood that a female student majors in economics by about 8 percentage points. Considering that the baseline average share for female students majoring in economics is at only 9 percent, this effect is quite huge. The intervention had no effect on male students.   
+
+
+To get a summary of all the awards you have earned and thereby an overview of what you learned throughout the problem set, click *check*.
+
+```{r "8_1"}
+awards()
+```
+
+
+
+
+
+## Exercise References
+
+### Bibliography
+
+- Gertler, P. J., Martinez, S., Premand, P., Rawlings, L. B., Vermeersch, C. M. J. (2016). Impact Evaluation in Practice, Second Edition. Washington, DC: Inter-American Development Bank and World Bank.
+
+- Porter, C., and Serra, D. (2020). "Gender Differences in the Choice of Major: The Importance of Female Role Models." American Economic Journal: Applied Economics, 12 (3): 226-54. 
+
+
+### R and R Packages
+
+-	Auguie, B. (2017). gridExtra: Miscellaneous Functions for "Grid" Graphics. R package version 2.3. https://CRAN.R-project.org/package=gridExtra
+
+-	Gaure, S. (2021). lfe: Linear group fixed effects. R package version 2.8-6
+
+-	Kranz, S. (2020). RTutor: Interactive R problem sets with automatic testing of solutions and automatic hints. R package version 2020.11.25.
+
+-	Leifeld, P. (2013). texreg: Conversion of Statistical Model Output in R to LaTeX and HTML Tables. Journal of Statistical Software, 55(8), 1-24. URL http://dx.doi.org/10.18637/jss.v055.i08.
+
+-	R Core Team (2021). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL   https://www.R-project.org/.
+
+-	Wickham, H. (2016). ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York.
+
+-	Wickham, H. (2021). forcats: Tools for Working with Categorical Variables (Factors). R package version 0.5.1. https://CRAN.R-project.org/package=forcats
+
+-	Wickham, H. and Miller, E. (2021). haven: Import and Export 'SPSS', 'Stata' and 'SAS' Files. R package version 2.4.3. https://CRAN.R-project.org/package=haven
+
+-	Wickham, H., François, R., Henry, L. and Müller, K. (2021). dplyr: A Grammar of Data Manipulation. R package version 1.0.6. https://CRAN.R-project.org/package=dplyr
+
+
+
