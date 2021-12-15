@@ -19,6 +19,9 @@ Welcome to this interactive problem set which is part of my bachelor's thesis at
 The article and the data can be downloaded [here](https://www.aeaweb.org/articles?id=10.1257/app.20180426). 
 
 
+This problem set is also published on `Github`: https://github.com/StefanieBuda/RTutorInfluenceOfFemaleRoleModels.
+
+
 ### Content 
 
 In their above-mentioned article, Catherine Porter and Danila Serra conduct a field experiment at an US university. Their goal is to increase the share of women majoring in economics. To do so, they want to tackle one possible reason: the low number of female role models. 
