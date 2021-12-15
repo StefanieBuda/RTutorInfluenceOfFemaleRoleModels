@@ -570,7 +570,7 @@ In our sample, 'before' and 'after' points are 2015 and 2016.
 Gertler et al. (2016) suggest a nice way to put the data to make it easier to calculate the DD impact without jumbling the values - a 4x4 table:
 
 
-![](data/table_did.png) 
+![](table_did.png)
 
 *This table is based on Table 7.1 of Gertler et al., 2016, p.133 (own representation).*
 
